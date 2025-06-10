@@ -1,10 +1,23 @@
-import { spawn } from "node:child_process";
+import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import JSZip from "jszip";
 
 export const TEST_DIR = path.join(process.cwd(), "test-fixtures");
 export const ZIPPER_PATH = path.join(process.cwd(), "dist", "index.js");
+
+/**
+ * Get the correct executable for running the CLI
+ */
+function getNodeExecutable(): string {
+  // On Windows with Volta, use the actual path
+  if (process.platform === "win32") {
+    return "C:\\Users\\parac\\AppData\\Local\\Volta\\tools\\image\\node\\22.16.0\\node.exe";
+  }
+
+  // For other platforms, try common names
+  return "node";
+}
 
 export interface CommandResult {
   stdout: string;
@@ -17,25 +30,22 @@ export interface CommandResult {
  */
 export async function runZipper(args: string[] = [], cwd: string = TEST_DIR): Promise<CommandResult> {
   return new Promise((resolve) => {
-    const child = spawn("node", [ZIPPER_PATH, ...args], {
-      cwd,
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-
-    let stdout = "";
-    let stderr = "";
-
-    child.stdout?.on("data", (data) => {
-      stdout += data.toString();
-    });
-
-    child.stderr?.on("data", (data) => {
-      stderr += data.toString();
-    });
-
-    child.on("close", (code) => {
-      resolve({ stdout, stderr, exitCode: code || 0 });
-    });
+    const nodeExecutable = getNodeExecutable();
+    execFile(
+      nodeExecutable,
+      [ZIPPER_PATH, ...args],
+      {
+        cwd,
+        encoding: "utf8",
+      },
+      (error, stdout, stderr) => {
+        resolve({
+          stdout: (stdout || "").toString(),
+          stderr: (stderr || "").toString(),
+          exitCode: error ? (typeof error.code === "number" ? error.code : 1) : 0,
+        });
+      },
+    );
   });
 }
 
