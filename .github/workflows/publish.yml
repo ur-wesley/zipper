@@ -60,12 +60,6 @@ jobs:
    - name: Build project
      run: bun run build
 
-   - name: Update package version
-     run: |
-      VERSION=${GITHUB_REF#refs/tags/v}
-      npm version $VERSION --no-git-tag-version
-      echo "Publishing version: $VERSION"
-
    - name: Publish to NPM
      run: npm publish
      env:
