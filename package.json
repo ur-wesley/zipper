@@ -17,7 +17,8 @@
     "test:zipignore": "bun test test/zipignore.test.ts",
     "test:functionality": "bun test test/functionality.test.ts",
     "prepublishOnly": "npm run build && npm test",
-    "bump": "bumpp --push --tag"
+    "bump": "bumpp --push --tag",
+    "clear": "rm -rf dist && rm -rf *.zip"
   },
   "keywords": [
     "zip",
