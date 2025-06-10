@@ -1,0 +1,99 @@
+name: Publish to NPM
+
+on:
+ push:
+  tags:
+   - "v*"
+ workflow_dispatch:
+
+jobs:
+ test:
+  runs-on: ubuntu-latest
+  steps:
+   - name: Checkout repository
+     uses: actions/checkout@v4
+
+   - name: Setup Bun
+     uses: oven-sh/setup-bun@v2
+     with:
+      bun-version: latest
+
+   - name: Install dependencies
+     run: bun install
+
+   - name: Run tests
+     run: bun test
+
+   - name: Lint code
+     run: bun run lint
+
+   - name: Build project
+     run: bun run build
+
+   - name: Verify build output
+     run: |
+      ls -la dist/
+      file dist/index.js
+      head -n 5 dist/index.js
+
+ publish:
+  needs: test
+  runs-on: ubuntu-latest
+  if: startsWith(github.ref, 'refs/tags/v')
+  steps:
+   - name: Checkout repository
+     uses: actions/checkout@v4
+
+   - name: Setup Node.js
+     uses: actions/setup-node@v4
+     with:
+      node-version: "20"
+      registry-url: "https://registry.npmjs.org"
+
+   - name: Setup Bun
+     uses: oven-sh/setup-bun@v2
+     with:
+      bun-version: latest
+
+   - name: Install dependencies
+     run: bun install
+
+   - name: Build project
+     run: bun run build
+
+   - name: Update package version
+     run: |
+      VERSION=${GITHUB_REF#refs/tags/v}
+      npm version $VERSION --no-git-tag-version
+      echo "Publishing version: $VERSION"
+
+   - name: Publish to NPM
+     run: npm publish
+     env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+   - name: Create GitHub Release
+     uses: actions/create-release@v1
+     env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     with:
+      tag_name: ${{ github.ref }}
+      release_name: Release ${{ github.ref }}
+      body: |
+       ## Changes
+
+       See the [CHANGELOG](CHANGELOG.md) for details.
+
+       ## Installation
+
+       ```bash
+       npm install -g @ur-wesley/zipper
+       ```
+
+       ## Usage
+
+       ```bash
+       zipper --help
+       ```
+      draft: false
+      prerelease: false
