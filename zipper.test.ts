@@ -1,15 +1,15 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 
 test("simple addition", () => {
- expect(1 + 1).toBe(2);
+  expect(1 + 1).toBe(2);
 });
 
 test("string concatenation", () => {
- expect("hello" + " world").toBe("hello world");
+  expect("hello" + " world").toBe("hello world");
 });
 
 test("array operations", () => {
- const arr = [1, 2, 3];
- expect(arr.length).toBe(3);
- expect(arr[0]).toBe(1);
+  const arr = [1, 2, 3];
+  expect(arr.length).toBe(3);
+  expect(arr[0]).toBe(1);
 });

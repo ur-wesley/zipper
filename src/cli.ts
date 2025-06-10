@@ -1,23 +1,23 @@
 import { version } from "../package.json";
 
 export interface CliArgs {
- targetPath: string;
- showHelp: boolean;
- showVersion: boolean;
+  targetPath: string;
+  showHelp: boolean;
+  showVersion: boolean;
 }
 
 export function parseArgs(): CliArgs {
- const args = process.argv.slice(2);
+  const args = process.argv.slice(2);
 
- return {
-  targetPath: args[0] || ".",
-  showHelp: args.includes("--help") || args.includes("-h"),
-  showVersion: args.includes("--version") || args.includes("-v"),
- };
+  return {
+    targetPath: args[0] || ".",
+    showHelp: args.includes("--help") || args.includes("-h"),
+    showVersion: args.includes("--version") || args.includes("-v"),
+  };
 }
 
 export function showHelp(): void {
- console.log(`
+  console.log(`
 Usage: zipper [path] [options]
 
 Arguments:
@@ -47,5 +47,5 @@ Configuration:
 }
 
 export function showVersion(): void {
- console.log(version);
+  console.log(version);
 }
