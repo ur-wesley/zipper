@@ -1,6 +1,6 @@
 {
   "name": "@ur-wesley/zipper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple and fast file archiving tool with gitignore-style exclusion patterns",
   "main": "index.js",
   "bin": {
